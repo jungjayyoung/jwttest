@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig{
     private final TokenProvider tokenProvider;
@@ -57,8 +57,8 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
-        return http.httpBasic().disable()
-                .csrf().disable()
+        return http.httpBasic().disable()//기본 로그인 페이지 사용X
+                .csrf().disable()//REST API를 사용하기 때문에 disable
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)

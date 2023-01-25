@@ -14,6 +14,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+// JWT를 위한 커스텀 필터를 만들기 위해 생성
 public class JwtFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
@@ -26,6 +27,8 @@ public class JwtFilter extends GenericFilterBean {
         this.tokenProvider = tokenProvider;
     }
 
+    //실제 필터링 로직이 있는 곳 doFilter
+    // doFilter는 토큰의 인증정보를 SecurityContext에 저장하는 역할을 수행한다.
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
@@ -44,6 +47,7 @@ public class JwtFilter extends GenericFilterBean {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
+    // Request Header에서 토큰 정보를 꺼내오기 위한 resolveToken 메소드 추가 => doFilter에 사용된다.
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

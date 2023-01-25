@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+
+//토큰의 생성, 토큰의 유효성 검증 등을 담당한다.
 @Component
 public class TokenProvider implements InitializingBean {
 
@@ -45,6 +47,8 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // anthentication 객체의 권한정보를 이용해서 토큰을 생성하는 createToken 메소드
+    // 권한, 만료시간 등을 설정하고 토큰을 생성한다.
     public String createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -61,6 +65,7 @@ public class TokenProvider implements InitializingBean {
                 .compact();
     }
 
+    // Token에 담겨있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts
                 .parserBuilder()
@@ -76,9 +81,11 @@ public class TokenProvider implements InitializingBean {
 
         User principal = new User(claims.getSubject(), "", authorities);
 
+        // 유저 정보와 token,권한정보를 이용하여 Authentication 객체를 리턴한다.
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+    // 토큰을 파라미터로 받아서 토큰의 유효성 검증을 수행하는 메소드
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
